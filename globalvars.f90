@@ -1,8 +1,9 @@
-module marching_variables
+module glob
     implicit none
-    integer :: m, n 
-    real :: xmin, xmax, dx, ymin, ymax, dy
-    real, dimension(:), allocatable :: xgrid, ygrid, fgrid
+    integer :: m, n !number of rows and columns of 2D grid
+    real :: xmin, xmax, dx, ymin, ymax, dy, sigma !grid specs
+    real, dimension(:), allocatable :: xgrid, ygrid, fgrid !grids
+    real, dimension(:), allocatable :: interpol_v, interpol_h !grid of edge interpolations
 
 contains
 
@@ -18,13 +19,13 @@ contains
         step = (xmax - xmin)/(n-1) !step size of grid
     
         do i = 1, n
-        grid(i) = xmin + (i-1)*step;
+            grid(i) = xmin + (i-1)*step;
         end do
 
     end subroutine Grid1D
 
-    subroutine gridspecInput(xmin, xmax, dx, m, ymin, ymax, dy, n, xgrid, ygrid, fgrid) !input and assignment of global variables 
-        real, intent(out) :: xmin, xmax, dx, ymin, ymax, dy
+    subroutine gridspecInput(xmin, xmax, dx, m, ymin, ymax, dy, n, sigma, xgrid, ygrid, fgrid) !input and assignment of global variables 
+        real, intent(out) :: xmin, xmax, dx, ymin, ymax, dy, sigma
         real, intent(out), allocatable :: xgrid(:), ygrid(:), fgrid(:)
         integer, intent(out) :: m, n
 
@@ -34,9 +35,14 @@ contains
         write(*,*) "ymin, ymax, n"; 
         read(*,*) ymin; read(*,*) ymax; read(*,*) n
         
+        write(*,*) "isovalue:";
+        read(*,*) sigma;
+
         allocate(xgrid(m))
         allocate(ygrid(n))
         allocate(fgrid(m*n))
+        allocate(interpol_h((n-1)*m))
+        allocate(interpol_v((m-1)*n))
 
         call Grid1D(xmin, xmax, m, dx, xgrid)
         call Grid1D(ymin, ymax, n, dy, ygrid)
@@ -51,10 +57,18 @@ contains
 
         do i = 1,m
             do j = 1,n
-                fgrid(m*(i-1) + j) = xgrid(i)**2 + ygrid(j)**2 
+                fgrid(m*(i-1) + j) = xgrid(j)**2 + ygrid(i)**2 
             end do 
         end do
         
     end subroutine dataGen
 
-end module marching_variables
+    subroutine writeToFile(xmin, dx, m, ymin, dy, n)
+        real, intent(in) :: xmin, dx, ymin, dy
+        integer, intent(in) :: m, n
+        open (unit = 3, file = "grid_specs.txt", status = "replace")
+        write(3,"(*(1x,g0))") xmin, dx, m
+        write(3,"(*(1x,g0))") ymin, dy, n
+        close(3)
+    end subroutine writeToFile
+end module glob
