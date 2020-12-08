@@ -57,13 +57,13 @@ contains
 
         do i = 1,m
             do j = 1,n
-                fgrid(m*(i-1) + j) = xgrid(j)**2 + ygrid(i)**2 
+                fgrid(n*(i-1) + j) = xgrid(j)**4 - xgrid(j)**2 + ygrid(i)**2
             end do 
         end do
         
     end subroutine dataGen
 
-    subroutine writeToFile(xmin, dx, m, ymin, dy, n)
+    subroutine writeToFile(xmin, dx, m, ymin, dy, n) !test function for grid, circular contours
         real, intent(in) :: xmin, dx, ymin, dy
         integer, intent(in) :: m, n
         open (unit = 3, file = "grid_specs.txt", status = "replace")
