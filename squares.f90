@@ -18,20 +18,20 @@ program marching_squares
         end if 
     end do
 
-    do i = 1, m !calculate interpolants of horizontal edges
-        do j = 1, n-1
-            call Index1D(k, n, i, j)
-            call Index1D(k1, n-1, i, j)
+    do i = 1, n !calculate interpolants of horizontal edges
+        do j = 1, m-1
+            call Index1D(k, m, i, j)
+            call Index1D(k1, m-1, i, j)
 
             call LinearInterpolation(xgrid(j), fgrid(k), xgrid(j+1), fgrid(k+1), interpol_h(k1), sigma)
 
         end do
     end do 
 
-    do i = 1, m-1 !calculate interpolants of vertical edges
-        do j = 1, n
-            call Index1D(k, n, i, j)
-            call Index1D(k1, n, i+1, j)
+    do i = 1, n-1 !calculate interpolants of vertical edges
+        do j = 1, m
+            call Index1D(k, m, i, j)
+            call Index1D(k1, m, i+1, j)
 
             call LinearInterpolation(ygrid(i), fgrid(k), ygrid(i+1), fgrid(k1), interpol_v(k), sigma)
             
@@ -40,12 +40,12 @@ program marching_squares
 
     open (unit = 1, file = "edges.txt", status = "replace")
 
-    do i = 1, m-1 ! loop to identify square type and construct edges
-        do j = 1, n-1
-            call Index1D(k1, n, i+1, j)
-            call Index1D(k2, n, i+1, j+1)
-            call Index1D(k3, n, i, j+1)
-            call Index1D(k, n, i, j)
+    do i = 1, n-1 ! loop to identify square type and construct edges
+        do j = 1, m-1
+            call Index1D(k1, m, i+1, j)
+            call Index1D(k2, m, i+1, j+1)
+            call Index1D(k3, m, i, j+1)
+            call Index1D(k, m, i, j)
 
             signcode = 1 + signs(k1) + 2*signs(k2) + 4*signs(k3) + 8*signs(k); !converts to number from 1-16
             call constructEdges(signcode, i, j, xgrid(j), ygrid(i))
@@ -94,68 +94,68 @@ subroutine constructEdges(code, i, j, x, y)
 
     select case(code)
         case(2)
-            call Index1D(k1, n, i, j)
-            call Index1D(k2, n-1, i+1, j)
+            call Index1D(k1, m, i, j)
+            call Index1D(k2, m-1, i+1, j)
             write(1,fmt) x, interpol_v(k1), interpol_h(k2), y+dy
         case(3)
-            call Index1D(k1, n, i, j+1)
-            call Index1D(k2, n-1, i+1, j)
+            call Index1D(k1, m, i, j+1)
+            call Index1D(k2, m-1, i+1, j)
             write(1,fmt) x+dx, interpol_v(k1), interpol_h(k2), y+dy
         case(4)
-            call Index1D(k1, n, i, j)
-            call Index1D(k2, n, i, j+1)
+            call Index1D(k1, m, i, j)
+            call Index1D(k2, m, i, j+1)
             write(1,fmt) x, interpol_v(k1), x+dx, interpol_v(k2)
         case(5)
-            call Index1D(k1, n, i, j+1)
-            call Index1D(k2, n-1, i, j)
+            call Index1D(k1, m, i, j+1)
+            call Index1D(k2, m-1, i, j)
             write(1,fmt) x+dx, interpol_v(k1), interpol_h(k2), y
         case(6)
-            call Index1D(k1, n, i, j)
-            call Index1D(k2, n-1, i, j)
+            call Index1D(k1, m, i, j)
+            call Index1D(k2, m-1, i, j)
             write(1,fmt) x, interpol_v(k1), interpol_h(k2), y
 
-            call Index1D(k3, n, i, j+1)
-            call Index1D(k4, n-1, i+1, j)
+            call Index1D(k3, m, i, j+1)
+            call Index1D(k4, m-1, i+1, j)
             write(1,fmt) x+dx, interpol_v(k3), interpol_h(k4), y+dy
         case(7)
-            call Index1D(k1, n-1, i, j)
-            call Index1D(k2, n-1, i+1, j)
+            call Index1D(k1, m-1, i, j)
+            call Index1D(k2, m-1, i+1, j)
             write(1,fmt) interpol_h(k1), y, interpol_h(k2), y+dy
         case(8)
-            call Index1D(k1, n, i, j)
-            call Index1D(k2, n-1, i, j)
+            call Index1D(k1, m, i, j)
+            call Index1D(k2, m-1, i, j)
             write(1,fmt) x, interpol_v(k1), interpol_h(k2), y
         case(9)
-            call Index1D(k1, n, i, j)
-            call Index1D(k2, n-1, i, j)
+            call Index1D(k1, m, i, j)
+            call Index1D(k2, m-1, i, j)
             write(1,fmt) x, interpol_v(k1), interpol_h(k2), y
         case(10)
-            call Index1D(k1, n-1, i, j)
-            call Index1D(k2, n-1, i+1, j)
+            call Index1D(k1, m-1, i, j)
+            call Index1D(k2, m-1, i+1, j)
             write(1,fmt) interpol_h(k1), y, interpol_h(k2), y+dy
         case(11)
-            call Index1D(k1, n, i, j)
-            call Index1D(k2, n-1, i+1, j)
+            call Index1D(k1, m, i, j)
+            call Index1D(k2, m-1, i+1, j)
             write(1,fmt) x, interpol_v(k1), interpol_h(k2), y+dy
 
-            call Index1D(k3, n, i, j+1)
-            call Index1D(k4, n-1, i, j)
+            call Index1D(k3, m, i, j+1)
+            call Index1D(k4, m-1, i, j)
             write(1,fmt) x+dx, interpol_v(k3), interpol_h(k4), y
         case(12)
-            call Index1D(k1, n, i, j+1)
-            call Index1D(k2, n-1, i, j)
+            call Index1D(k1, m, i, j+1)
+            call Index1D(k2, m-1, i, j)
             write(1,fmt) x+dx, interpol_v(k1), interpol_h(k2), y
         case(13)
-            call Index1D(k1, n, i, j)
-            call Index1D(k2, n, i, j+1)
+            call Index1D(k1, m, i, j)
+            call Index1D(k2, m, i, j+1)
             write(1,fmt) x, interpol_v(k1), x+dx, interpol_v(k2)
         case(14)
-            call Index1D(k1, n, i, j+1)
-            call Index1D(k2, n-1, i+1, j)
+            call Index1D(k1, m, i, j+1)
+            call Index1D(k2, m-1, i+1, j)
             write(1,fmt) x+dx, interpol_v(k1), interpol_h(k2), y+dy
         case(15)
-            call Index1D(k1, n, i, j)
-            call Index1D(k2, n-1, i+1, j)
+            call Index1D(k1, m, i, j)
+            call Index1D(k2, m-1, i+1, j)
             write(1,fmt) x, interpol_v(k1), interpol_h(k2), y+dy
         
         case default

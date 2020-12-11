@@ -41,8 +41,8 @@ contains
         allocate(xgrid(m))
         allocate(ygrid(n))
         allocate(fgrid(m*n))
-        allocate(interpol_h((n-1)*m))
-        allocate(interpol_v((m-1)*n))
+        allocate(interpol_h((m-1)*n))
+        allocate(interpol_v((n-1)*m))
 
         call Grid1D(xmin, xmax, m, dx, xgrid)
         call Grid1D(ymin, ymax, n, dy, ygrid)
@@ -55,9 +55,9 @@ contains
         integer, intent(in) :: m, n
         integer :: i, j
 
-        do i = 1,m
-            do j = 1,n
-                fgrid(n*(i-1) + j) = xgrid(j)**4 - xgrid(j)**2 + ygrid(i)**2
+        do i = 1, n
+            do j = 1, m
+                fgrid(m*(i-1) + j) = xgrid(j)**4 - xgrid(j)**2 + ygrid(i)**2
             end do 
         end do
         
